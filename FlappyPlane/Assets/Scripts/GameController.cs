@@ -17,17 +17,26 @@ public class GameController : MonoBehaviour
     
     //Variáveis de tempo
     [SerializeField] private float tMin = 1f;
-    [SerializeField] private float tMax = 3f;
+    [SerializeField] private float tMax = 2.5f;
 
     //Pontuacao
     [SerializeField] private Text pontosTexto;
 
     private float pontos = 0f;
+
+    //Variavel do level
+    private int level = 1;
+    [SerializeField] private Text levelTexto;
+    [SerializeField] private float proximoLevel = 10f;
+
+    //Variaveis do som
+    [SerializeField] private AudioClip levelUp;
+    private Vector3 camPos;
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        camPos = Camera.main.transform.position;
     }
 
     // Update is called once per frame
@@ -37,15 +46,36 @@ public class GameController : MonoBehaviour
 
         //Criando obstaculos aleatoriamente
         CriaObstaculo();
+
+        GanhaLevel();
+    }
+
+    //Ganhando level
+    private void GanhaLevel()
+    {
+
+
+        //Debug.Log(level);
+
+        levelTexto.text = level.ToString();
+
+        if(pontos > proximoLevel)
+        {
+            
+            AudioSource.PlayClipAtPoint(levelUp, camPos);
+
+            level++;
+            proximoLevel *= 2;
+        }
     }
 
     private void Pontuar()
     {
-        pontos += Time.deltaTime;
+        pontos += Time.deltaTime * level;
        
         pontosTexto.text = Mathf.Round(pontos).ToString();
         
-        Debug.Log(Mathf.Round(pontos));
+        //Debug.Log(Mathf.Round(pontos));
     }
 
     private void CriaObstaculo()
@@ -53,9 +83,9 @@ public class GameController : MonoBehaviour
         timer -= Time.deltaTime;
         if (timer <= 0f)
         {
-            Debug.Log("Oi");
+            //Debug.Log("Oi");
 
-            timer = Random.Range(tMin, tMax);
+            timer = Random.Range(tMin / level, tMax);
 
 
             posicao.y = Random.Range(posMin, posMax);
@@ -65,4 +95,10 @@ public class GameController : MonoBehaviour
 
         }
     }
+
+    public int RetornaLevel()
+    {
+        return level;
+    }
+
 }
